@@ -1,6 +1,5 @@
 const rp = require("request-promise");
-const { pick, pipe, head, lens, prop, assoc } = require("ramda");
-const { getExchangeRate } = require("./currencyRate");
+const { pick, pipe, head } = require("ramda");
 
 const buildCountryURL = countryName =>
   `https://restcountries.eu/rest/v2/name/${countryName}`;

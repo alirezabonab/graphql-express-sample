@@ -1,14 +1,5 @@
-const express = require("express");
-const routes = require("./route");
-const bodyparser = require("body-parser");
-const config = require("./config");
+const app = require("./app");
 
-const app = express();
-
-app.use(bodyparser.json());
-
-
-
-app.use("/api/v1", routes);
-
-module.exports = app;
+app.listen(4000, () => {
+  console.log("Running a GraphQL API server at localhost:4000/graphql");
+});

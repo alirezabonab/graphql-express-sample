@@ -2,8 +2,19 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../config");
 
+/* 
+ * our mock and in memory user collection 
+ */
 var users = [];
 
+
+/*  
+ *  This method is a simple Request Handler which accepts  
+ *  { username, password, name } in body and register that user 
+ *  into our in memory user collection 
+ *  during this registeration it will hash the password and instead of 
+ *  saving Raw password we save hashed password into collection 
+ */
 exports.singup = (req, res) => {
   const { username, password, name } = req.body;
 
@@ -16,12 +27,20 @@ exports.singup = (req, res) => {
   if (users.some(item => item.username === username)) {
     return res.status(400).json({ message: "username already exists." });
   }
-
+  // create hash password 
   const hashPassword = bcrypt.hashSync(password, 10);
   users.push({ username, hashPassword, name });
   return res.status(201).json({ message: "registered successfully." });
 };
 
+
+/*  
+ *  This methos is a Request Handler which accepts 
+ *  {username , password} in body and looks into our in memory user collection
+ *  if it found the user it will try to compare hash password with the password 
+ *  user has provided, in case username and password are correct it will generate
+ *  JWT token and sends it to the client in response
+ */
 exports.login = (req, res) => {
   const { username, password } = req.body;
 
@@ -49,7 +68,14 @@ exports.login = (req, res) => {
   }
 };
 
-exports.validateMiddleware = (req, res, next) => {
+
+/* 
+ * This method acts as middleware on routes we want to validate for user 
+ * has already logged in or not, if user is logged in and the token is found in header
+ * it will goes to next middleware and if user has not logged in it will return 
+ * 401 with Incorect Token message
+ */
+exports.requireLoggin = (req, res, next) => {
   try {
     if (
       req.headers.authorization &&
